@@ -1,0 +1,3 @@
+com/example/jobposting/api/JobpostingApiApplicationTests.class
+com/example/jobposting/api/service/JobPostingServiceTest.class
+com/example/jobposting/api/controller/JobPostingControllerTest.class

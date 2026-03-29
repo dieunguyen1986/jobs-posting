@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/jobs")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 @Tag(name = "Job Posting API", description = "Endpoints for managing job postings")
 public class JobPostingController {
 
