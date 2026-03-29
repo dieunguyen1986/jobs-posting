@@ -37,37 +37,239 @@ body {
     color: var(--brand-primary) !important;
 }
 
-/* Hero Section */
-.hero-section {
-    background: linear-gradient(rgba(30, 33, 71, 0.7), rgba(30, 33, 71, 0.7)), url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover;
-    padding: 120px 0;
-    color: white;
+/* --- STRICT THEME: JOB BOARD 2 UI CLONE --- */
+
+/* 1. Slider Area (Hero) */
+.slider_area {
+    background: #f5fdf9;
+    padding: 150px 0 100px 0;
+    position: relative;
+    overflow: hidden;
 }
 
-.hero-title {
-    font-size: 3.5rem;
+.slider_text h5 {
+    color: var(--brand-primary);
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 12px;
+}
+
+.slider_text h3 {
+    font-size: 60px;
     font-weight: 700;
+    color: var(--text-dark);
     line-height: 1.2;
-    margin-bottom: 1.5rem;
+    margin-bottom: 20px;
 }
 
-.hero-subtitle {
-    font-size: 1.2rem;
-    opacity: 0.9;
-    margin-bottom: 3rem;
+.slider_text p {
+    font-size: 18px;
+    color: var(--text-muted);
+    margin-bottom: 35px;
 }
 
-.hero-search-card {
-    background: white;
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+.ilstration_img {
+    position: absolute;
+    right: 5%;
+    bottom: 0;
+    width: 45%;
+    max-width: 600px;
 }
 
-.hero-search-input {
-    border: 1px solid #e2e8f0;
-    padding: 15px 20px;
+.ilstration_img img {
+    width: 100%;
+}
+
+/* 2. Catagory Area (Search Bar Strip) */
+.catagory_area {
+    background: #fff;
+    padding: 50px 0 30px 0;
+    border-bottom: 1px solid #eee;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    position: relative;
+    z-index: 10;
+    margin-top: -30px;
     border-radius: 5px;
+    max-width: 1140px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cat_search .single_input {
+    margin-bottom: 20px;
+}
+
+.cat_search input, .cat_search select {
+    width: 100%;
+    height: 60px;
+    border: 1px solid #e8e8e8;
+    background: #fff;
+    padding: 0 20px;
+    font-size: 16px;
+    color: #7A839B;
+    border-radius: 5px;
+    outline: none;
+}
+
+.popular_search {
+    margin-top: 10px;
+}
+
+.popular_search span {
+    font-size: 16px;
+    color: var(--text-dark);
+    font-weight: 500;
+    margin-right: 15px;
+}
+
+.popular_search ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.popular_search ul li {
+    margin-right: 15px;
+}
+
+.popular_search ul li a {
+    color: var(--text-muted);
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.popular_search ul li a:hover {
+    color: var(--brand-primary);
+}
+
+/* 3. Single Category (Popular Categories) */
+.popular_catagory_area {
+    padding: 100px 0;
+    background: #f5fdf9;
+}
+
+/* 4. Candidates Grid */
+.featured_candidates_area {
+    padding: 100px 0;
+    background: #fff;
+}
+
+.single_candidates {
+    background: #f5fdf9;
+    padding: 40px 30px;
+    border-radius: 5px;
+    transition: 0.3s;
+    border: 1px solid transparent;
+}
+
+.single_candidates:hover {
+    background: #fff;
+    border-color: #eee;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.single_candidates .thumb {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 20px;
+}
+
+.single_candidates .thumb img {
+    width: 100%;
+}
+
+.single_candidates h4 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+}
+
+.single_candidates p {
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* 5. Top Companies Grid */
+.top_companies_area {
+    padding: 100px 0 70px 0;
+    background: #f5fdf9;
+}
+
+.single_company {
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 5px;
+    text-align: center;
+    border: 1px solid #eee;
+    transition: 0.3s;
+    margin-bottom: 30px;
+}
+
+.single_company:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.single_company .thumb {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 25px;
+    border-radius: 5px;
+    background: #f5fdf9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.single_company h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+}
+
+.single_company p {
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* 6. Job Searching Wrap (Dark Overlay) */
+.job_searcing_wrap {
+    background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    padding: 100px 0;
+    z-index: 1;
+}
+
+.job_searcing_wrap::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(30, 33, 71, 0.9);
+    z-index: -1;
+}
+
+.searching_text h3 {
+    font-size: 40px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 15px;
+}
+
+.searching_text p {
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 30px;
 }
 
 /* Buttons */
