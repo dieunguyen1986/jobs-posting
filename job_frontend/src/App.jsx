@@ -1,6 +1,7 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation';
+import Home from './pages/Home';
 import JobList from './pages/JobList';
 import JobForm from './pages/JobForm';
 
@@ -9,9 +10,9 @@ function App() {
     <Router>
       <div className="bg-light min-vh-100">
         <Navigation />
-        <main className="py-2">
+        <main>
           <Routes>
-            <Route path="/" element={<Navigate to="/jobs" />} />
+            <Route path="/" element={<Home />} />
             <Route path="/jobs" element={<JobList />} />
             <Route path="/add-job" element={<JobForm />} />
             <Route path="/edit-job/:id" element={<JobForm />} />
