@@ -1,34 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, createSearchParams } from 'react-router-dom';
 import JobService from '../services/JobService';
 
 const Home = () => {
     const [recentJobs, setRecentJobs] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
+    
+    // Search states
+    const [keyword, setKeyword] = useState('');
+    const [location, setLocation] = useState('');
+    const [department, setDepartment] = useState('');
+
     const navigate = useNavigate();
 
+    // Map departments to Bootstrap icons visually
+    const getIconForCategory = (name) => {
+        const iconMap = {
+            'design': 'bi-palette',
+            'creative': 'bi-palette',
+            'marketing': 'bi-megaphone',
+            'telemarketing': 'bi-telephone-forward',
+            'software': 'bi-laptop',
+            'web': 'bi-laptop',
+            'engineering': 'bi-tools',
+            'administration': 'bi-building',
+            'teaching': 'bi-book',
+            'garments': 'bi-scissors'
+        };
+        const key = Object.keys(iconMap).find(k => name.toLowerCase().includes(k));
+        return key ? iconMap[key] : 'bi-briefcase';
+    };
+
     useEffect(() => {
-        // Fetch only first page to show recent jobs
-        JobService.getJobs(0, 5).then((res) => {
+        // Fetch recent jobs
+        JobService.searchJobs('', '', '', '', 0, 5).then((res) => {
              setRecentJobs(res.data.content);
              setLoading(false);
         }).catch(err => {
              console.error("Home: Error loading recent jobs", err);
              setLoading(false);
         });
+
+        // Fetch department counts
+        JobService.getDepartmentCounts().then((res) => {
+             setCategories(res.data);
+        }).catch(console.error);
     }, []);
 
-    const categories = [
-        { name: "Design & Creative", count: 50, icon: "bi-palette" },
-        { name: "Marketing", count: 86, icon: "bi-megaphone" },
-        { name: "Telemarketing", count: 42, icon: "bi-telephone-forward" },
-        { name: "Software & Web", count: 120, icon: "bi-laptop" },
-        { name: "Administration", count: 35, icon: "bi-building" },
-        { name: "Teaching & Education", count: 65, icon: "bi-book" },
-        { name: "Engineering", count: 90, icon: "bi-tools" },
-        { name: "Garments / Textile", count: 20, icon: "bi-scissors" },
-    ];
+    const handleSearch = (e) => {
+        e.preventDefault();
+        const params = {};
+        if (keyword) params.keyword = keyword;
+        if (location) params.location = location;
+        if (department) params.department = department;
+        
+        navigate({
+            pathname: '/jobs',
+            search: `?${createSearchParams(params)}`
+        });
+    };
 
     return (
         <>
@@ -38,29 +70,45 @@ const Home = () => {
                     <Row className="justify-content-center">
                         <Col lg={10} xl={8}>
                             <h1 className="hero-title">Find the most exciting startup jobs</h1>
-                            <p className="hero-subtitle">Search between more than 50,000 open jobs</p>
+                            <p className="hero-subtitle">Search through thousands of active opportunities</p>
                             
                             <div className="hero-search-card text-start">
-                                <Form className="d-flex flex-column flex-md-row gap-3">
+                                <Form className="d-flex flex-column flex-md-row gap-3" onSubmit={handleSearch}>
                                     <div className="flex-grow-1">
-                                        <Form.Control type="text" placeholder="Job Title or Keyword" className="hero-search-input" />
+                                        <Form.Control 
+                                            type="text" 
+                                            placeholder="Job Title or Keyword" 
+                                            className="hero-search-input"
+                                            value={keyword}
+                                            onChange={(e) => setKeyword(e.target.value)}
+                                        />
                                     </div>
                                     <div className="flex-grow-1">
-                                        <Form.Select className="hero-search-input">
-                                            <option>All Locations</option>
-                                            <option>New York</option>
-                                            <option>California</option>
-                                            <option>Remote</option>
+                                        <Form.Select 
+                                            className="hero-search-input"
+                                            value={location}
+                                            onChange={(e) => setLocation(e.target.value)}
+                                        >
+                                            <option value="">All Locations</option>
+                                            <option value="New York">New York</option>
+                                            <option value="California">California</option>
+                                            <option value="Remote">Remote</option>
                                         </Form.Select>
                                     </div>
                                     <div className="flex-grow-1">
-                                        <Form.Select className="hero-search-input">
-                                            <option>All Categories</option>
-                                            {categories.map((c, i) => <option key={i}>{c.name}</option>)}
+                                        <Form.Select 
+                                            className="hero-search-input"
+                                            value={department}
+                                            onChange={(e) => setDepartment(e.target.value)}
+                                        >
+                                            <option value="">All Categories</option>
+                                            {categories.map((c, i) => (
+                                                <option key={i} value={c.name}>{c.name}</option>
+                                            ))}
                                         </Form.Select>
                                     </div>
                                     <div>
-                                        <Button className="btn-brand w-100 h-100 px-4" onClick={(e) => { e.preventDefault(); navigate('/jobs'); }}>
+                                        <Button type="submit" className="btn-brand w-100 h-100 px-4">
                                             Find Job
                                         </Button>
                                     </div>
@@ -80,15 +128,21 @@ const Home = () => {
                     </div>
                     
                     <Row className="g-4">
-                        {categories.map((cat, index) => (
+                        {categories.slice(0, 8).map((cat, index) => (
                             <Col md={6} lg={3} key={index}>
-                                <div className="category-card" onClick={() => navigate('/jobs')}>
-                                    <i className={`bi ${cat.icon} category-icon`}></i>
+                                <div 
+                                    className="category-card" 
+                                    onClick={() => navigate(`/jobs?department=${encodeURIComponent(cat.name)}`)}
+                                >
+                                    <i className={`bi ${getIconForCategory(cat.name)} category-icon`}></i>
                                     <h4 className="category-title">{cat.name}</h4>
-                                    <span className="category-count">{cat.count} Available position</span>
+                                    <span className="category-count">{cat.count} Available position{cat.count !== 1 && 's'}</span>
                                 </div>
                             </Col>
                         ))}
+                        {categories.length === 0 && !loading && (
+                            <div className="text-center text-muted">No categories populated yet.</div>
+                        )}
                     </Row>
                 </Container>
             </section>
@@ -132,7 +186,7 @@ const Home = () => {
                                                 Apply Now
                                             </Button>
                                             <div className="text-muted mt-2 small">
-                                                Date line: 1 Week
+                                                Active Listing
                                             </div>
                                         </div>
                                     </div>
@@ -155,7 +209,7 @@ const Home = () => {
                             <div className="cta-card">
                                 <h3>Looking for a job?</h3>
                                 <p className="text-muted mb-4 mt-3 col-10">We have thousands of opportunities available. Browse job listings to find your ideal career fit today.</p>
-                                <Button className="btn-brand" onClick={() => navigate('/jobs')}>Browser Job</Button>
+                                <Button className="btn-brand" onClick={() => navigate('/jobs')}>Browser Jobs</Button>
                             </div>
                         </Col>
                         <Col lg={6}>

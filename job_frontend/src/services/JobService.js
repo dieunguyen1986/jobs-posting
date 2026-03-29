@@ -11,6 +11,19 @@ class JobService {
         return axios.get(`${JOB_API_BASE_URL}/${jobId}`);
     }
 
+    searchJobs(keyword, location, department, employmentType, page = 0, size = 10) {
+        let url = `${JOB_API_BASE_URL}/search?page=${page}&size=${size}`;
+        if (keyword) url += `&keyword=${encodeURIComponent(keyword)}`;
+        if (location) url += `&location=${encodeURIComponent(location)}`;
+        if (department) url += `&department=${encodeURIComponent(department)}`;
+        if (employmentType) url += `&employmentType=${encodeURIComponent(employmentType)}`;
+        return axios.get(url);
+    }
+
+    getDepartmentCounts() {
+        return axios.get(`${JOB_API_BASE_URL}/departments/counts`);
+    }
+
     createJob(job) {
         return axios.post(JOB_API_BASE_URL, job);
     }

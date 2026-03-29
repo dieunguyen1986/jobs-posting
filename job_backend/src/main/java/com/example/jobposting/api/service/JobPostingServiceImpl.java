@@ -64,6 +64,19 @@ public class JobPostingServiceImpl implements JobPostingService {
         jobPostingRepository.delete(existingJobPosting);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<JobPostingResponse> searchJobs(String keyword, String location, String department, String employmentType, Pageable pageable) {
+        Page<JobPosting> jobs = jobPostingRepository.searchActiveJobs(keyword, location, department, employmentType, pageable);
+        return jobs.map(this::mapToResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public java.util.List<com.example.jobposting.api.dto.CategoryCountDTO> getDepartmentCounts() {
+        return jobPostingRepository.countActiveJobsByDepartment();
+    }
+
     // Mapper methods
     private JobPosting mapToEntity(JobPostingRequest request) {
         return JobPosting.builder()

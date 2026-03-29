@@ -40,6 +40,24 @@ public class JobPostingController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Search active job postings dynamically")
+    @GetMapping("/search")
+    public ResponseEntity<Page<JobPostingResponse>> searchJobs(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) String department,
+            @RequestParam(required = false) String employmentType,
+            Pageable pageable) {
+        Page<JobPostingResponse> response = jobPostingService.searchJobs(keyword, location, department, employmentType, pageable);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Get aggregated active job counts per department")
+    @GetMapping("/departments/counts")
+    public ResponseEntity<java.util.List<com.example.jobposting.api.dto.CategoryCountDTO>> getDepartmentJobCounts() {
+        return ResponseEntity.ok(jobPostingService.getDepartmentCounts());
+    }
+
     @Operation(summary = "Get a job posting by ID")
     @GetMapping("/{id}")
     public ResponseEntity<JobPostingResponse> getJobPostingById(@PathVariable Long id) {

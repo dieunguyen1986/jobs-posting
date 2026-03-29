@@ -1,24 +1,48 @@
 import { useState, useEffect } from 'react';
 import { Container, Button, Alert, Row, Col, Form } from 'react-bootstrap';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import JobService from '../services/JobService';
 
 const JobList = () => {
     const [jobs, setJobs] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
 
+    const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
 
+    // Filter states initialized from URL params
+    const [filterKeyword, setFilterKeyword] = useState(searchParams.get('keyword') || '');
+    const [filterLocation, setFilterLocation] = useState(searchParams.get('location') || '');
+    const [filterDepartment, setFilterDepartment] = useState(searchParams.get('department') || '');
+    const [filterType, setFilterType] = useState(searchParams.get('employmentType') || '');
+
     useEffect(() => {
+        // Fetch categories for the sidebar
+        JobService.getDepartmentCounts().then(res => setCategories(res.data)).catch(console.error);
+    }, []);
+
+    useEffect(() => {
+        // Whenever searchParams or page changes, execute search API
         fetchJobs();
-    }, [page]);
+        // Sync local states to URL in case URL was changed externally (e.g. Back button)
+        setFilterKeyword(searchParams.get('keyword') || '');
+        setFilterLocation(searchParams.get('location') || '');
+        setFilterDepartment(searchParams.get('department') || '');
+        setFilterType(searchParams.get('employmentType') || '');
+    }, [page, searchParams]);
 
     const fetchJobs = () => {
         setLoading(true);
-        JobService.getJobs(page, 10).then((res) => {
+        const kw = searchParams.get('keyword') || '';
+        const loc = searchParams.get('location') || '';
+        const dept = searchParams.get('department') || '';
+        const type = searchParams.get('employmentType') || '';
+
+        JobService.searchJobs(kw, loc, dept, type, page, 10).then((res) => {
             setJobs(res.data.content);
             setTotalPages(res.data.totalPages);
             setLoading(false);
@@ -28,6 +52,18 @@ const JobList = () => {
             setError("Failed to fetch jobs. Please ensure backend is running.");
             setLoading(false);
         });
+    };
+
+    const applyFilters = (e) => {
+        if(e) e.preventDefault();
+        const params = {};
+        if (filterKeyword) params.keyword = filterKeyword;
+        if (filterLocation) params.location = filterLocation;
+        if (filterDepartment) params.department = filterDepartment;
+        if (filterType) params.employmentType = filterType;
+        
+        setPage(0); // Reset to page 0 on new search
+        setSearchParams(params);
     };
 
     const deleteJob = (id) => {
@@ -53,49 +89,93 @@ const JobList = () => {
 
             <Container className="mb-5 pb-5">
                 <Row className="g-4">
-                    {/* LEFT SIDEBAR FILTERS (Placeholder UI) */}
+                    {/* LEFT SIDEBAR FILTERS */}
                     <Col lg={4}>
                         <div className="job-filter-sidebar">
-                            {/* Filter Category */}
-                            <div className="filter-group">
-                                <h4>Job Category</h4>
-                                <Form.Select className="py-2 text-muted">
-                                    <option>Select Category</option>
-                                    <option>Design & Creative</option>
-                                    <option>Marketing</option>
-                                    <option>Software & Web</option>
-                                    <option>Administration</option>
-                                </Form.Select>
-                            </div>
+                            <Form onSubmit={applyFilters}>
+                                {/* Quick Search */}
+                                <div className="filter-group">
+                                    <h4>Search Keyword</h4>
+                                    <Form.Control 
+                                        type="text" 
+                                        placeholder="Job Title / Keyword" 
+                                        className="py-2 mb-3"
+                                        value={filterKeyword}
+                                        onChange={(e) => setFilterKeyword(e.target.value)}
+                                    />
+                                </div>
 
-                            {/* Job Type Checkboxes */}
-                            <div className="filter-group">
-                                <h4>Job Type</h4>
-                                <Form.Check type="checkbox" id="check-ft" label="Full Time" className="custom-checkbox mb-2" />
-                                <Form.Check type="checkbox" id="check-pt" label="Part Time" className="custom-checkbox mb-2" />
-                                <Form.Check type="checkbox" id="check-rm" label="Remote" className="custom-checkbox mb-2" />
-                                <Form.Check type="checkbox" id="check-ct" label="Contract" className="custom-checkbox mb-2" />
-                            </div>
+                                {/* Filter Category */}
+                                <div className="filter-group">
+                                    <h4>Job Category</h4>
+                                    <Form.Select 
+                                        className="py-2 text-muted"
+                                        value={filterDepartment}
+                                        onChange={(e) => setFilterDepartment(e.target.value)}
+                                    >
+                                        <option value="">Any Category</option>
+                                        {categories.map((c, i) => (
+                                            <option key={i} value={c.name}>{c.name} ({c.count})</option>
+                                        ))}
+                                    </Form.Select>
+                                </div>
 
-                            {/* Location Filter */}
-                            <div className="filter-group">
-                                <h4>Location</h4>
-                                <Form.Select className="py-2 text-muted">
-                                    <option>Anywhere</option>
-                                    <option>New York</option>
-                                    <option>California</option>
-                                    <option>Remote</option>
-                                </Form.Select>
-                            </div>
+                                {/* Job Type Checkboxes (Converted to radios for 1-active selection) */}
+                                <div className="filter-group">
+                                    <h4>Job Type</h4>
+                                    <Form.Check 
+                                        type="radio" name="jobtype" id="type-all" label="All Types" className="custom-checkbox mb-2" 
+                                        checked={filterType === ''} onChange={() => setFilterType('')}
+                                    />
+                                    <Form.Check 
+                                        type="radio" name="jobtype" id="type-ft" label="Full Time" className="custom-checkbox mb-2" 
+                                        checked={filterType === 'FULL_TIME'} onChange={() => setFilterType('FULL_TIME')}
+                                    />
+                                    <Form.Check 
+                                        type="radio" name="jobtype" id="type-pt" label="Part Time" className="custom-checkbox mb-2" 
+                                        checked={filterType === 'PART_TIME'} onChange={() => setFilterType('PART_TIME')}
+                                    />
+                                    <Form.Check 
+                                        type="radio" name="jobtype" id="type-ct" label="Contract" className="custom-checkbox mb-2" 
+                                        checked={filterType === 'CONTRACT'} onChange={() => setFilterType('CONTRACT')}
+                                    />
+                                    <Form.Check 
+                                        type="radio" name="jobtype" id="type-in" label="Internship" className="custom-checkbox mb-2" 
+                                        checked={filterType === 'INTERNSHIP'} onChange={() => setFilterType('INTERNSHIP')}
+                                    />
+                                </div>
 
-                            <Button className="btn-brand w-100 mt-2">Filter Jobs</Button>
+                                {/* Location Filter */}
+                                <div className="filter-group">
+                                    <h4>Location</h4>
+                                    <Form.Select 
+                                        className="py-2 text-muted"
+                                        value={filterLocation}
+                                        onChange={(e) => setFilterLocation(e.target.value)}
+                                    >
+                                        <option value="">Anywhere</option>
+                                        <option value="New York">New York</option>
+                                        <option value="California">California</option>
+                                        <option value="Remote">Remote</option>
+                                        <option value="London">London</option>
+                                    </Form.Select>
+                                </div>
+
+                                <Button type="submit" className="btn-brand w-100 mt-2">Filter Jobs</Button>
+                                {(searchParams.toString().length > 0) && (
+                                    <Button variant="link" className="w-100 mt-2 text-muted text-decoration-none" onClick={() => {
+                                        setFilterKeyword(''); setFilterLocation(''); setFilterDepartment(''); setFilterType('');
+                                        setSearchParams({});
+                                    }}>Clear Filters</Button>
+                                )}
+                            </Form>
                         </div>
                     </Col>
 
                     {/* RIGHT MAIN CONTENT (Job Feed) */}
                     <Col lg={8}>
                         <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
-                            <h3 className="mb-0 fw-bold">{jobs.length} Jobs found</h3>
+                            <h3 className="mb-0 fw-bold">{loading ? "..." : jobs.length} Jobs found</h3>
                             <Button variant="primary" className="btn-brand" onClick={() => navigate('/add-job')}>
                                 <i className="bi bi-plus-circle me-2"></i>Post Job
                             </Button>
@@ -106,13 +186,13 @@ const JobList = () => {
                         {loading ? (
                              <div className="text-center py-5">
                                  <div className="spinner-border text-success" role="status"></div>
-                                 <p className="mt-2 text-muted">Loading Open Positions...</p>
+                                 <p className="mt-2 text-muted">Searching Positions...</p>
                              </div>
                         ) : jobs.length === 0 ? (
                             <Alert variant="info" className="text-center py-5">
                                 <i className="bi bi-briefcase display-1"></i>
                                 <h4 className="mt-3">No jobs found!</h4>
-                                <p>There are no active job postings available at the moment.</p>
+                                <p>Try adjusting your filters or search keywords.</p>
                             </Alert>
                         ) : (
                             <div className="job-list-wrapper">
@@ -150,7 +230,7 @@ const JobList = () => {
                                                 <i className="bi bi-trash"></i> Delete
                                             </Button>
                                             <div className="text-muted mt-auto small">
-                                                Date: 1 Week Ago
+                                                Active Listing
                                             </div>
                                         </div>
                                     </div>

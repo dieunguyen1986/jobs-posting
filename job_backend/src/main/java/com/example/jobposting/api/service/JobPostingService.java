@@ -11,4 +11,7 @@ public interface JobPostingService {
     JobPostingResponse getJobPostingById(Long id);
     JobPostingResponse updateJobPosting(Long id, JobPostingRequest request);
     void deleteJobPosting(Long id);
+
+    Page<JobPostingResponse> searchJobs(String keyword, String location, String department, String employmentType, Pageable pageable);
+    java.util.List<com.example.jobposting.api.dto.CategoryCountDTO> getDepartmentCounts();
 }
