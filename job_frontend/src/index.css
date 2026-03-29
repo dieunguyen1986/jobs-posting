@@ -236,6 +236,107 @@ body {
     color: white;
 }
 
+/* Sidebar Filters */
+.job-filter-sidebar {
+    background: #f5fdf9;
+    padding: 30px;
+    border-radius: 8px;
+    border: 1px solid #eef2f6;
+}
+
+.job-filter-sidebar h4 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: var(--text-dark);
+    position: relative;
+}
+
+.job-filter-sidebar h4::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: var(--brand-primary);
+}
+
+.filter-group {
+    margin-bottom: 30px;
+}
+
+.filter-label {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--text-dark);
+}
+
+.custom-checkbox .form-check-input:checked {
+    background-color: var(--brand-primary);
+    border-color: var(--brand-primary);
+}
+
+.custom-checkbox label {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* Custom Pagination */
+.theme-pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin-top: 50px;
+    gap: 10px;
+}
+
+.theme-pagination .page-item {
+    margin: 0;
+}
+
+.theme-pagination .page-link {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    color: var(--text-muted);
+    border: 1px solid #eef2f6;
+    background: white;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.theme-pagination .page-link:hover, 
+.theme-pagination .page-item.active .page-link {
+    background: var(--brand-primary);
+    color: white;
+    border-color: var(--brand-primary);
+    box-shadow: 0 4px 10px rgba(0, 211, 99, 0.2);
+}
+
+/* Job Breadcrumb Header */
+.job-header-banner {
+    background: linear-gradient(rgba(30, 33, 71, 0.8), rgba(30, 33, 71, 0.8)), url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover;
+    padding: 80px 0;
+    text-align: center;
+    color: white;
+    margin-bottom: 60px;
+}
+
+/* Details Description Text */
+.job-desc-preview {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-top: 15px;
+    margin-bottom: 0;
+    line-height: 1.6;
+}
+
 /* Utils */
 .section-title {
     font-size: 2.5rem;

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Container, Card, Button, Spinner, Alert, Badge, Row, Col } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { Container, Button, Alert, Row, Col, Form } from 'react-bootstrap';
+import { useNavigate, Link } from 'react-router-dom';
 import JobService from '../services/JobService';
 
 const JobList = () => {
@@ -22,6 +22,7 @@ const JobList = () => {
             setJobs(res.data.content);
             setTotalPages(res.data.totalPages);
             setLoading(false);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }).catch((err) => {
             console.error(err);
             setError("Failed to fetch jobs. Please ensure backend is running.");
@@ -40,86 +41,143 @@ const JobList = () => {
         }
     };
 
-    if (loading && jobs.length === 0) {
-        return (
-            <Container className="text-center mt-5">
-                <Spinner animation="border" variant="primary" />
-                <p className="mt-2">Loading Open Positions...</p>
-            </Container>
-        );
-    }
-
     return (
-        <Container>
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2 className="mb-0">Current Openings</h2>
-                <Button variant="primary" onClick={() => navigate('/add-job')}>
-                    <i className="bi bi-plus-circle me-2"></i>Post New Job
-                </Button>
+        <>
+            {/* Breadcrumb Header */}
+            <div className="job-header-banner">
+                <Container>
+                    <h1 className="fw-bold display-4">Get your Dream Job</h1>
+                    <p className="lead">Over 50,000 opportunities waiting for you</p>
+                </Container>
             </div>
 
-            {error && <Alert variant="danger">{error}</Alert>}
+            <Container className="mb-5 pb-5">
+                <Row className="g-4">
+                    {/* LEFT SIDEBAR FILTERS (Placeholder UI) */}
+                    <Col lg={4}>
+                        <div className="job-filter-sidebar">
+                            {/* Filter Category */}
+                            <div className="filter-group">
+                                <h4>Job Category</h4>
+                                <Form.Select className="py-2 text-muted">
+                                    <option>Select Category</option>
+                                    <option>Design & Creative</option>
+                                    <option>Marketing</option>
+                                    <option>Software & Web</option>
+                                    <option>Administration</option>
+                                </Form.Select>
+                            </div>
 
-            {jobs.length === 0 && !loading && !error && (
-                <Alert variant="info" className="text-center py-5">
-                    <i className="bi bi-briefcase display-1"></i>
-                    <h4 className="mt-3">No jobs found!</h4>
-                    <p>There are no active job postings available at the moment.</p>
-                </Alert>
-            )}
+                            {/* Job Type Checkboxes */}
+                            <div className="filter-group">
+                                <h4>Job Type</h4>
+                                <Form.Check type="checkbox" id="check-ft" label="Full Time" className="custom-checkbox mb-2" />
+                                <Form.Check type="checkbox" id="check-pt" label="Part Time" className="custom-checkbox mb-2" />
+                                <Form.Check type="checkbox" id="check-rm" label="Remote" className="custom-checkbox mb-2" />
+                                <Form.Check type="checkbox" id="check-ct" label="Contract" className="custom-checkbox mb-2" />
+                            </div>
 
-            <Row className="g-4">
-                {jobs.map((job) => (
-                    <Col md={6} lg={4} key={job.id}>
-                        <Card className="h-100 shadow-sm border-0 job-card">
-                            <Card.Body className="d-flex flex-column">
-                                <Card.Title className="fw-bold mb-3">{job.title}</Card.Title>
-                                <Card.Subtitle className="mb-3 text-muted d-flex align-items-center">
-                                    <i className="bi bi-building me-2"></i>{job.department}
-                                </Card.Subtitle>
-                                
-                                <div className="mb-3">
-                                    <Badge bg="info" className="me-2 rounded-pill px-3 py-2">
-                                        <i className="bi bi-geo-alt-fill me-1"></i>{job.location}
-                                    </Badge>
-                                    <Badge bg={job.active ? "success" : "secondary"} className="rounded-pill px-3 py-2">
-                                        {job.employmentType}
-                                    </Badge>
-                                </div>
-                                
-                                <Card.Text className="text-truncate-3 flex-grow-1 text-secondary">
-                                    {job.description}
-                                </Card.Text>
-                                
-                            </Card.Body>
-                            <Card.Footer className="bg-white border-0 pb-3 pt-0">
-                                <div className="d-flex gap-2 mt-auto">
-                                    <Button variant="outline-primary" size="sm" className="w-50" onClick={() => navigate(`/edit-job/${job.id}`)}>
-                                        <i className="bi bi-pencil me-1"></i>Edit
-                                    </Button>
-                                    <Button variant="outline-danger" size="sm" className="w-50" onClick={() => deleteJob(job.id)}>
-                                        <i className="bi bi-trash me-1"></i>Delete
-                                    </Button>
-                                </div>
-                            </Card.Footer>
-                        </Card>
+                            {/* Location Filter */}
+                            <div className="filter-group">
+                                <h4>Location</h4>
+                                <Form.Select className="py-2 text-muted">
+                                    <option>Anywhere</option>
+                                    <option>New York</option>
+                                    <option>California</option>
+                                    <option>Remote</option>
+                                </Form.Select>
+                            </div>
+
+                            <Button className="btn-brand w-100 mt-2">Filter Jobs</Button>
+                        </div>
                     </Col>
-                ))}
-            </Row>
 
-            {/* Simple Pagination */}
-            {totalPages > 1 && (
-                <div className="d-flex justify-content-center mt-4">
-                    <Button variant="outline-secondary" disabled={page === 0} onClick={() => setPage(page - 1)} className="me-2">
-                        Previous
-                    </Button>
-                    <span className="align-self-center">Page {page + 1} of {totalPages}</span>
-                    <Button variant="outline-secondary" disabled={page >= totalPages - 1} onClick={() => setPage(page + 1)} className="ms-2">
-                        Next
-                    </Button>
-                </div>
-            )}
-        </Container>
+                    {/* RIGHT MAIN CONTENT (Job Feed) */}
+                    <Col lg={8}>
+                        <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                            <h3 className="mb-0 fw-bold">{jobs.length} Jobs found</h3>
+                            <Button variant="primary" className="btn-brand" onClick={() => navigate('/add-job')}>
+                                <i className="bi bi-plus-circle me-2"></i>Post Job
+                            </Button>
+                        </div>
+
+                        {error && <Alert variant="danger">{error}</Alert>}
+
+                        {loading ? (
+                             <div className="text-center py-5">
+                                 <div className="spinner-border text-success" role="status"></div>
+                                 <p className="mt-2 text-muted">Loading Open Positions...</p>
+                             </div>
+                        ) : jobs.length === 0 ? (
+                            <Alert variant="info" className="text-center py-5">
+                                <i className="bi bi-briefcase display-1"></i>
+                                <h4 className="mt-3">No jobs found!</h4>
+                                <p>There are no active job postings available at the moment.</p>
+                            </Alert>
+                        ) : (
+                            <div className="job-list-wrapper">
+                                {jobs.map((job) => (
+                                    <div className="job-row align-items-start" key={job.id}>
+                                        <div className="job-logo-box">
+                                            <i className="bi bi-briefcase-fill job-logo-icon"></i>
+                                        </div>
+                                        <div className="flex-grow-1 pe-3">
+                                            <Link to={`/edit-job/${job.id}`} className="job-title-link d-block">{job.title}</Link>
+                                            
+                                            {/* Meta Tags */}
+                                            <div className="job-meta-list mb-2">
+                                                <div className="job-meta-item">
+                                                    <i className="bi bi-building"></i>{job.department}
+                                                </div>
+                                                <div className="job-meta-item">
+                                                    <i className="bi bi-geo-alt-fill"></i>{job.location}
+                                                </div>
+                                                <div className="job-meta-item">
+                                                    <span className={`pill-badge pill-success`}>{job.employmentType}</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Advanced Job Description Preview */}
+                                            <p className="job-desc-preview text-truncate-3">
+                                                {job.description || "No description provided for this job opening."}
+                                            </p>
+                                        </div>
+                                        <div className="text-end d-flex flex-column justify-content-between h-100 ms-2" style={{minWidth: '130px'}}>
+                                            <Button variant="outline-success" className="btn-outline-brand rounded-pill px-4 mb-3" onClick={() => navigate(`/edit-job/${job.id}`)}>
+                                                Apply Now
+                                            </Button>
+                                            <Button variant="link" className="text-danger p-0 mt-2 text-end text-decoration-none small" onClick={() => deleteJob(job.id)}>
+                                                <i className="bi bi-trash"></i> Delete
+                                            </Button>
+                                            <div className="text-muted mt-auto small">
+                                                Date: 1 Week Ago
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Theme Customized Pagination */}
+                        {!loading && totalPages > 1 && (
+                            <ul className="pagination theme-pagination">
+                                <li className={`page-item ${page === 0 ? 'disabled' : ''}`}>
+                                    <button className="page-link" onClick={() => setPage(page - 1)}>&laquo;</button>
+                                </li>
+                                {[...Array(totalPages)].map((_, i) => (
+                                    <li key={i} className={`page-item ${page === i ? 'active' : ''}`}>
+                                        <button className="page-link" onClick={() => setPage(i)}>{(i + 1).toString().padStart(2, '0')}</button>
+                                    </li>
+                                ))}
+                                <li className={`page-item ${page >= totalPages - 1 ? 'disabled' : ''}`}>
+                                    <button className="page-link" onClick={() => setPage(page + 1)}>&raquo;</button>
+                                </li>
+                            </ul>
+                        )}
+                    </Col>
+                </Row>
+            </Container>
+        </>
     );
 };
 
