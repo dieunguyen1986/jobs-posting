@@ -66,20 +66,22 @@ const Home = () => {
         <>
             {/* 1. SLIDER AREA (Hero) */}
             <div className="slider_area">
-                <Container>
-                    <Row className="align-items-center">
-                        <Col lg={7} md={6}>
-                            <div className="slider_text">
-                                <h5>50,000+ Jobs listed</h5>
-                                <h3>Find your Dream Job</h3>
-                                <p>We provide opportunities for dedicated candidates seeking the best positions to suit their career paths.</p>
-                                <div className="sldier_btn mt-4">
-                                    <Button className="btn-brand px-5 py-3" onClick={() => navigate('/jobs')}>Upload your Resume</Button>
+                <div className="single_slider d-flex align-items-center slider_bg_1">
+                    <Container>
+                        <Row className="align-items-center">
+                            <Col lg={7} md={6}>
+                                <div className="slider_text">
+                                    <h5>50,000+ Jobs listed</h5>
+                                    <h3>Find your Dream Job</h3>
+                                    <p>We provide opportunities for dedicated candidates seeking the best positions to suit their career paths.</p>
+                                    <div className="sldier_btn mt-4">
+                                        <button className="boxed-btn3" onClick={() => navigate('/jobs')}>Upload your Resume</button>
+                                    </div>
                                 </div>
-                            </div>
-                        </Col>
-                    </Row>
-                </Container>
+                            </Col>
+                        </Row>
+                    </Container>
+                </div>
                 {/* Fixed illustration placeholder replacing the local image */}
                 <div className="ilstration_img d-none d-lg-block">
                     <img src="https://raw.githubusercontent.com/themewagon/job-board-2/master/img/banner/illustration.png" alt="Hero Illustration" />
@@ -89,7 +91,7 @@ const Home = () => {
             {/* 2. CATAGORY AREA (Search Bar Strip) */}
             <div className="catagory_area">
                 <Container>
-                    <Form className="row cat_search" onSubmit={handleSearch}>
+                    <Form className="row cat_search align-items-center" onSubmit={handleSearch}>
                         <Col lg={3} md={4}>
                             <div className="single_input">
                                 <input 
@@ -121,7 +123,7 @@ const Home = () => {
                         </Col>
                         <Col lg={3} md={12}>
                             <div className="job_btn">
-                                <Button type="submit" className="btn-brand w-100 h-100 fs-5 pb-3">Find Job</Button>
+                                <button type="submit" className="boxed-btn3 w-100 fs-5">Find Job</button>
                             </div>
                         </Col>
                     </Form>
